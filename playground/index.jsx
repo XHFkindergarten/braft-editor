@@ -5,19 +5,67 @@ import BraftEditor from '../src'
 // import Table from 'braft-extensions/dist/table'
 // import CodeHighlighter from 'braft-extensions/dist/code-highlighter'
 // import Emoticon, { defaultEmoticons } from 'braft-extensions/dist/emoticon'
+import Markdown from 'braft-extensions/dist/markdown'
+import CodeHighlighter from 'braft-extensions/dist/code-highlighter'
 
-// import 'braft-extensions/dist/emoticon.css'
-// import 'braft-extensions/dist/color-picker.css'
-// import 'braft-extensions/dist/table.css'
-// import 'braft-extensions/dist/code-highlighter.css'
+import 'braft-extensions/dist/emoticon.css'
+import 'braft-extensions/dist/color-picker.css'
+import 'braft-extensions/dist/table.css'
+import 'braft-extensions/dist/code-highlighter.css'
 
 // const emoticons = defaultEmoticons.map(item => require(`braft-extensions/dist/assets/${item}`))
+const options = {
+  syntaxs: [
+    {
+      name: 'JavaScript',
+      syntax: 'javascript'
+    },
+    {
+      name: 'HTML',
+      syntax: 'html'
+    },
+    {
+      name: 'CSS',
+      syntax: 'css'
+    },
+    {
+      name: 'Java',
+      syntax: 'java'
+    },
+    {
+      name: 'PHP',
+      syntax: 'php'
+    }
+  ]
+}
 
 const hooks = {
+  // 设置图片 alignment
   'set-image-alignment': () => {
     return 'left'
+  },
+  'toggle-link': ({ href, target }) => {
+    href = href.indexOf('http') === 0 ? href : `http://${href}`
+    return { href, target: '_blank' }
+  },
+  'set-image-link': link => {
+    try {
+      // 目前发现点击确认面板不会自动收起
+      // dom query 查找 link 按钮的位置并人工点击来使面板收起
+      const linkIndex = this.imageControls.indexOf('link')
+      document
+        .querySelector('div.bf-media-toolbar')
+        .querySelectorAll('a')
+        [linkIndex].click()
+    } catch (e) {
+      console.error('人工点击 link panel 失败', e)
+    }
+    return link
   }
 }
+
+BraftEditor.use(Markdown({}))
+BraftEditor.use(CodeHighlighter(options))
 
 // BraftEditor.use([
 //   Emoticon({
@@ -30,23 +78,83 @@ const hooks = {
 //   CodeHighlighter()
 // ])
 
+const ValidType = {
+  PNG: 'image/png',
+  GIF: 'image/gif',
+  JPEG: 'image/jpeg',
+  MP4: 'video/mp4'
+}
+
 class Demo extends React.Component {
-
-  constructor(props) {
-
-    super(props)
-
-    this.state = {
-      count: 0,
-      readOnly: false,
-      editorState: BraftEditor.createEditorState('<p data-foo="adasd" class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">asdasdasda</span>asdads</p>')
-    }
-
+  state = {
+    count: 0,
+    readOnly: false,
+    editorState: BraftEditor.createEditorState('<p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>')
   }
 
   handleChange = (editorState) => {
     this.setState({ editorState })
   }
+
+  // toolbar
+  controls = [
+    'undo',
+    'redo',
+    'font-size',
+    'text-color',
+    'underline',
+    'bold',
+    'italic',
+    'underline',
+    'strike-through',
+    'text-align',
+    'text-indent',
+    'list-ol',
+    'list-ul',
+    'blockquote',
+    'code',
+    'link',
+    'table'
+    // 'media'
+  ]
+
+  // 支持的文件类型
+  validFileTypes = [ValidType.PNG, ValidType.GIF, ValidType.JPEG, ValidType.MP4]
+
+  // 图片操作
+  imageControls = [
+    // 'float-left', // 设置图片左浮动
+    // 'float-right', // 设置图片右浮动
+    'align-left', // 设置图片居左
+    'align-center', // 设置图片居中
+    'align-right', // 设置图片居右
+    'link', // 设置图片超链接
+    // 'size', // 设置图片尺寸 // 暂时隐藏，用户交互比较复杂
+    'remove' // 删除图片
+  ]
+
+  hooks = {
+    'toggle-link': ({ href, target }) => {
+      href = href.indexOf('http') === 0 ? href : `http://${href}`
+      return { href, target: '_blank' }
+    },
+    'set-image-link': link => {
+      try {
+        // 目前发现点击确认面板不会自动收起
+        // dom query 查找 link 按钮的位置并人工点击来使面板收起
+        const linkIndex = this.imageControls.indexOf('link')
+        document
+          .querySelector('div.bf-media-toolbar')
+          .querySelectorAll('a')
+          [linkIndex].click()
+      } catch (e) {
+        console.error('人工点击 link panel 失败', e)
+      }
+      return link
+    }
+  }
+
+  fontSizes = [12, 14, 16, 18, 20, 24, 28, 30, 32, 36, 40]
 
   logHTML = () => {
     console.log(this.state.editorState.toHTML())
@@ -64,6 +172,8 @@ class Demo extends React.Component {
       <div>
         <div className="demo" id="demo">
           <BraftEditor
+            controls={this.controls}
+            // 拓展工具栏
             extendControls={[{
               key: 'log-raw',
               type: 'button',
@@ -95,18 +205,20 @@ class Demo extends React.Component {
               // disabled: true,
               component: <h1>Hello World!</h1>
             }]}
-            colors={['#e25041']}
-            headings={['header-one', 'unstyled']}
+            fontSizes={this.fontSizes}
+            // colors={['#e25041']}
+            // headings={['header-one', 'unstyled']}
             placeholder="Hello World!"
-            fixPlaceholder={true}
-            allowInsertLinkText={true}
-            triggerChangeOnMount={false}
+            // fixPlaceholder={true}
+            // allowInsertLinkText={true}
+            // triggerChangeOnMount={false}
             value={editorState}
             onChange={this.handleChange}
-            readOnly={readOnly}
+            // readOnly={readOnly}
             hooks={hooks}
-            imageResizable={true}
-            imageEqualRatio={true}
+            // imageResizable={true}
+            // imageEqualRatio={true}
+            imageControls={this.imageControls}
           />
         </div>
       </div>
