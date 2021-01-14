@@ -498,7 +498,8 @@ export default class Image extends React.Component {
       toolbarVisible: false
     }, () => {
       this.unlockEditor()
-      // this.props.editor.requestFocus()
+      // 在鼠标移出图片区域后，恢复光标 focus 态
+      this.props.editor.requestFocus()
     })
   }
 
