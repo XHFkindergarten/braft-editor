@@ -74,7 +74,6 @@ export default class ControlBar extends React.Component {
 
     let className = 'control-item button'
     let { type, command } = data
-
     if (type === 'inline-style' && ContentUtils.selectionHasInlineStyle(this.props.editorState, command)) {
       className += ' active'
     } else if (type === 'block-type' && ContentUtils.getSelectionBlockType(this.props.editorState) === command) {
@@ -87,19 +86,27 @@ export default class ControlBar extends React.Component {
 
   }
 
+  /**
+   * 在编辑器 state 上应用一个修改
+   * @param {*} command 命令类型
+   * @param {*} type 模块类型
+   * @param {*} data 数据
+   */
   applyControl (command, type, data = {}) {
-
+    // 获取钩子函数
     const hookReturns = this.props.hooks(commandHookMap[type] || type, command)(command)
+    // 编辑器 state
     let editorState = this.props.editorState
-
+    
+    // 钩子函数返回 false 不再处理
     if (hookReturns === false) {
       return false
     }
-
+    // 钩子函数返回一个字符串，被用作新的 command
     if (typeof hookReturns === 'string') {
       command = hookReturns
     }
-
+    // 修改行内样式
     if (type === 'inline-style') {
       let exclusiveInlineStyle = exclusiveInlineStyles[command]
       if (exclusiveInlineStyle && ContentUtils.selectionHasInlineStyle(editorState, exclusiveInlineStyle)) {
@@ -121,15 +128,15 @@ export default class ControlBar extends React.Component {
   }
 
   openBraftFinder = () => {
-
     if (!this.props.braftFinder || !this.props.braftFinder.ReactComponent) {
       return false
     }
 
+    // 执行钩子函数
     if (this.props.hooks('open-braft-finder')() === false) {
       return false
     }
-
+    
     const mediaProps = this.props.media
     const MediaLibrary = this.props.braftFinder.ReactComponent
 
@@ -161,24 +168,25 @@ export default class ControlBar extends React.Component {
     return this.props.hooks(hookName, params[0])(...params)
   }
 
+  /**
+   * 插入媒体内容
+   * @param {*} medias 媒体
+   */
   insertMedias = (medias) => {
-
     this.props.editor.setValue(ContentUtils.insertMedias(this.props.editorState, medias))
     this.props.editor.requestFocus()
+    // 钩子函数
     this.props.media.onInsert && this.props.media.onInsert(medias)
     this.closeBraftFinder()
-
   }
 
+  // 关闭媒体插入弹窗
   closeBraftFinder = () => {
-
     this.props.media.onCancel && this.props.media.onCancel()
     this.mediaLibiraryModal && this.mediaLibiraryModal.close()
-
   }
 
   render() {
-
     const { editor, editorId, editorState, className, style, controls, media, extendControls, language, hooks, colors, colorPicker, colorPickerTheme, colorPickerAutoHide, headings, fontSizes, fontFamilies, emojis, getContainerNode, lineHeights, letterSpacings, textAligns, textBackgroundColor, allowInsertLinkText, defaultLinkTarget } = this.props
     const currentBlockType = ContentUtils.getSelectionBlockType(editorState)
     const commonProps = { editor, editorId, editorState, language, getContainerNode, hooks }

@@ -86,6 +86,7 @@ export default class Image extends React.Component {
     let imageStyles = {}
     let clearFix = false
 
+    // 处理图片样式
     if (float) {
       alignment = null
     } else if (alignment === 'left') {

@@ -71,6 +71,7 @@ export const getExtensionInlineStyleMap = (editorId) => {
 
 export const getExtensionInlineStyleFns = (editorId) => filterByEditorId(extensionInlineStyleFns, editorId)
 
+// 合成样式引入函数
 export const compositeStyleImportFn = (styleImportFn, editorId) => (nodeName, node, style) => {
 
   filterByEditorId(inlineStyleImporters, editorId).forEach(styleImporter => {

@@ -2715,7 +2715,8 @@ var getExtensionInlineStyleMap = function getExtensionInlineStyleMap(editorId) {
 };
 var getExtensionInlineStyleFns = function getExtensionInlineStyleFns(editorId) {
   return filterByEditorId(extension_extensionInlineStyleFns, editorId);
-};
+}; // 合成样式引入函数
+
 var compositeStyleImportFn = function compositeStyleImportFn(styleImportFn, editorId) {
   return function (nodeName, node, style) {
     filterByEditorId(inlineStyleImporters, editorId).forEach(function (styleImporter) {
@@ -3696,8 +3697,9 @@ function (_React$Component) {
       _this.setState({
         toolbarVisible: false
       }, function () {
-        _this.unlockEditor(); // this.props.editor.requestFocus()
+        _this.unlockEditor();
 
+        _this.props.editor.requestFocus();
       });
     });
 
@@ -3731,7 +3733,7 @@ function (_React$Component) {
           height = mediaData.height,
           meta = mediaData.meta;
       var imageStyles = {};
-      var clearFix = false;
+      var clearFix = false; // 处理图片样式
 
       if (float) {
         alignment = null;
@@ -4590,6 +4592,8 @@ var blockRendererFn_BlockRenderFnContext = function BlockRenderFnContext() {
     var customBlockRendererFn = _this.customBlockRendererFn,
         superProps = _this.superProps;
     var blockType = block.getType();
+    console.log('block', block);
+    console.log('blockType', blockType);
     var blockRenderer = null;
 
     if (customBlockRendererFn) {
@@ -5390,7 +5394,8 @@ var blocks = {
       key: index,
       className: 'menu-item' + (isActive ? ' active' : ''),
       onClick: function onClick() {
-        props.onChange(item.command, item.type), dropDownInstance.hide();
+        props.onChange(item.command, item.type);
+        dropDownInstance.hide();
       }
     }, item.text);
   })));
@@ -6120,7 +6125,8 @@ function (_React$Component) {
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "openBraftFinder", function () {
       if (!_this.props.braftFinder || !_this.props.braftFinder.ReactComponent) {
         return false;
-      }
+      } // 执行钩子函数
+
 
       if (_this.props.hooks('open-braft-finder')() === false) {
         return false;
@@ -6158,7 +6164,8 @@ function (_React$Component) {
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "insertMedias", function (medias) {
       _this.props.editor.setValue(external_braft_utils_["ContentUtils"].insertMedias(_this.props.editorState, medias));
 
-      _this.props.editor.requestFocus();
+      _this.props.editor.requestFocus(); // 钩子函数
+
 
       _this.props.media.onInsert && _this.props.media.onInsert(medias);
 
@@ -6206,20 +6213,31 @@ function (_React$Component) {
 
       return className;
     }
+    /**
+     * 在编辑器 state 上应用一个修改
+     * @param {*} command 命令类型
+     * @param {*} type 模块类型
+     * @param {*} data 数据
+     */
+
   }, {
     key: "applyControl",
     value: function applyControl(command, type) {
       var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-      var hookReturns = this.props.hooks(commandHookMap[type] || type, command)(command);
-      var editorState = this.props.editorState;
+      // 获取钩子函数
+      var hookReturns = this.props.hooks(commandHookMap[type] || type, command)(command); // 编辑器 state
+
+      var editorState = this.props.editorState; // 钩子函数返回 false 不再处理
 
       if (hookReturns === false) {
         return false;
-      }
+      } // 钩子函数返回一个字符串，被用作新的 command
+
 
       if (typeof hookReturns === 'string') {
         command = hookReturns;
-      }
+      } // 修改行内样式
+
 
       if (type === 'inline-style') {
         var exclusiveInlineStyle = exclusiveInlineStyles[command];
@@ -6526,7 +6544,7 @@ function (_React$Component) {
 
 
 
-
+ // 拉取 合法的
 
 var buildHooks = function buildHooks(hooks) {
   return function (hookName) {
@@ -6545,7 +6563,8 @@ var filterColors = function filterColors(colors, colors2) {
   }).filter(function (item, index, array) {
     return array.indexOf(item) === index;
   });
-};
+}; // 检查某项控件是否可用
+
 
 var editor_isControlEnabled = function isControlEnabled(props, controlName) {
   return toConsumableArray_default()(props.controls).concat(toConsumableArray_default()(props.extendControls)).find(function (item) {
@@ -6579,9 +6598,11 @@ function (_React$Component) {
 
     classCallCheck_default()(this, BraftEditor);
 
-    _this = possibleConstructorReturn_default()(this, getPrototypeOf_default()(BraftEditor).call(this, props));
+    _this = possibleConstructorReturn_default()(this, getPrototypeOf_default()(BraftEditor).call(this, props)); // 读取编辑器的参数项，拦截器筛选后的
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "onChange", function (editorState, callback) {
+      console.log('change');
+
       if (!(editorState instanceof external_draft_js_["EditorState"])) {
         editorState = external_draft_js_["EditorState"].set(editorState, {
           decorator: _this.editorDecorators
@@ -6627,9 +6648,11 @@ function (_React$Component) {
     });
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "onTab", function (event) {
+      // 如果在处理函数中已经被处理了，就取消默认事件
       if (handlers_keyCommandHandlers('tab', _this.state.editorState, assertThisInitialized_default()(assertThisInitialized_default()(_this))) === 'handled') {
         event.preventDefault();
-      }
+      } // 触发钩子
+
 
       _this.editorProps.onTab && _this.editorProps.onTab(event);
     });
@@ -6720,18 +6743,25 @@ function (_React$Component) {
       _this.containerNode = containerNode;
     });
 
-    _this.editorProps = _this.getEditorProps(props);
+    _this.editorProps = _this.getEditorProps(props); // @question 装饰器
+
     _this.editorDecorators = getDecorators(_this.editorProps.editorId || _this.editorProps.id);
+    console.log('editorDecorators', _this.editorDecorators);
     _this.isFocused = false;
     _this.isLiving = false;
     _this.braftFinder = null;
-    _this.valueInitialized = !!(_this.props.defaultValue || _this.props.value);
-    var defaultEditorState = (_this.props.defaultValue || _this.props.value) instanceof external_draft_js_["EditorState"] ? _this.props.defaultValue || _this.props.value : external_draft_js_["EditorState"].createEmpty(_this.editorDecorators);
+    _this.valueInitialized = !!(_this.props.defaultValue || _this.props.value); // draftjs 创建 state 对象
+
+    var defaultEditorState = (_this.props.defaultValue || _this.props.value) instanceof external_draft_js_["EditorState"] ? _this.props.defaultValue || _this.props.value : external_draft_js_["EditorState"].createEmpty(_this.editorDecorators); // 挂载【转换配置】
+    // 根据外部的传入生成转换规则
+
     defaultEditorState.setConvertOptions(editor_getConvertOptions(_this.editorProps));
     var tempColors = [];
 
     if (external_braft_utils_["ContentUtils"].isEditorState(defaultEditorState)) {
-      var colors = external_braft_utils_["ColorUtils"].detectColorsFromDraftState(defaultEditorState.toRAW(true));
+      // 提取文档内容中使用的样式颜色
+      var colors = external_braft_utils_["ColorUtils"].detectColorsFromDraftState(defaultEditorState.toRAW(true)); // 将属性挂载到 State 实例上
+
       defaultEditorState.setConvertOptions(editor_getConvertOptions(_this.editorProps));
       tempColors = filterColors(colors, _this.editorProps.colors);
     }
@@ -6744,7 +6774,10 @@ function (_React$Component) {
     };
     _this.containerNode = null;
     return _this;
-  }
+  } // 数据初始化处理
+  // 1. 取出特殊参数 例如 value, onChange, defaultValue
+  // 2. 根据 editorId 筛选器进行属性的筛选
+
 
   createClass_default()(BraftEditor, [{
     key: "getEditorProps",
@@ -6764,7 +6797,8 @@ function (_React$Component) {
 
       if (propInterceptors.length === 0) {
         return restProps;
-      }
+      } // 不可变数据化
+
 
       var porpsMap = Object(external_immutable_["Map"])(restProps);
       propInterceptors.forEach(function (interceptor) {
@@ -6816,7 +6850,7 @@ function (_React$Component) {
       var _this$editorProps2 = this.editorProps,
           media = _this$editorProps2.media,
           language = _this$editorProps2.language;
-      var currentProps = this.getEditorProps();
+      var currentProps = this.getEditorProps(); // 判断媒体组件是否可用
 
       if (!editor_isControlEnabled(currentProps, 'media') && editor_isControlEnabled(this.editorProps, 'media') && !this.braftFinder) {
         var _defaultProps$media$m2 = objectSpread_default()({}, configs_props.media, media),
@@ -6868,8 +6902,15 @@ function (_React$Component) {
       this.isLiving = false;
       this.controlBarInstance && this.controlBarInstance.closeBraftFinder();
     }
+    /**
+     * 
+     * @param {*} editorState 新的 state
+     * @param {*} callback 回调函数
+     */
+
   }, {
     key: "lockOrUnlockEditor",
+    // 是否锁定编辑器
     value: function lockOrUnlockEditor(editorLocked) {
       this.setState({
         editorLocked: editorLocked
@@ -6921,24 +6962,40 @@ function (_React$Component) {
           componentBelowControlBar = _this$editorProps3.componentBelowControlBar;
       var _this$state = this.state,
           isFullscreen = _this$state.isFullscreen,
-          editorState = _this$state.editorState;
-      editorId = editorId || id;
-      hooks = buildHooks(hooks);
+          editorState = _this$state.editorState; // 编辑器 id
+
+      editorId = editorId || id; // 外部 生命周期钩子
+
+      hooks = buildHooks(hooks); // 筛选所有的控件名称
+
       controls = controls.filter(function (item) {
         return excludeControls.indexOf(item) === -1;
-      });
-      language = (typeof language === 'function' ? language(languages, 'braft-editor') : languages[language]) || languages[configs_props.language];
+      }); // 语言设置
+
+      language = (typeof language === 'function' ? language(languages, 'braft-editor') : languages[language]) || languages[configs_props.language]; // 
+
+      /**
+       * 支持的媒体
+       * audio: true
+       * embed: true
+       * image: true
+       * video: true
+       */
+
       var externalMedias = media && media.externals ? objectSpread_default()({}, configs_props.media.externals, media.externals) : configs_props.media.externals;
-      var accepts = media && media.accepts ? objectSpread_default()({}, configs_props.media.accepts, media.accepts) : configs_props.media.accepts;
+      var accepts = media && media.accepts ? objectSpread_default()({}, configs_props.media.accepts, media.accepts) : configs_props.media.accepts; // 允许上传的媒体类型
+
       media = objectSpread_default()({}, configs_props.media, media, {
         externalMedias: externalMedias,
-        accepts: accepts
+        accepts: accepts // 如果没有上传函数, 那么类型为 false
+
       });
 
       if (!media.uploadFn) {
         media.video = false;
         media.audio = false;
-      }
+      } // 工具栏参数
+
 
       var controlBarProps = {
         editor: this,
@@ -6973,7 +7030,8 @@ function (_React$Component) {
         allowInsertLinkText: allowInsertLinkText,
         defaultLinkTarget: defaultLinkTarget
       };
-      var unitExportFn = editorState.convertOptions.unitExportFn;
+      var unitExportFn = editorState.convertOptions.unitExportFn; // 公共参数
+
       var commonProps = {
         editor: this,
         editorId: editorId,
@@ -6986,7 +7044,8 @@ function (_React$Component) {
         extendAtomics: extendAtomics,
         imageEqualRatio: imageEqualRatio
       };
-      var blockRendererFn = getBlockRendererFn(commonProps, this.editorProps.blockRendererFn);
+      var blockRendererFn = getBlockRendererFn(commonProps, this.editorProps.blockRendererFn); // 渲染各类 block 的 renderer
+
       var blockRenderMap = getBlockRenderMap(commonProps, this.editorProps.blockRenderMap);
       var blockStyleFn = getBlockStyleFn(this.editorProps.blockStyleFn);
       var customStyleMap = getCustomStyleMap(commonProps, this.editorProps.customStyleMap);
@@ -7000,11 +7059,13 @@ function (_React$Component) {
 
       if (this.state.editorLocked || this.editorProps.disabled || this.editorProps.readOnly || this.editorProps.draftProps.readOnly) {
         mixedProps.readOnly = true;
-      }
+      } // 如果内容为空，但是存在样式，则不显示 placeholder
+
 
       if (placeholder && fixPlaceholder && editorState.isEmpty() && editorState.getCurrentContent().getFirstBlock().getType() !== 'unstyled') {
         placeholder = '';
-      }
+      } // 生成 draft-js 格式的参数
+
 
       var draftProps = objectSpread_default()({
         ref: function ref(instance) {
@@ -7074,7 +7135,8 @@ external_draft_js_["EditorState"].prototype.toHTML = function () {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var convertOptions = this.convertOptions || {};
   return Object(external_braft_convert_["convertEditorStateToHTML"])(this, objectSpread_default()({}, convertOptions, options));
-};
+}; // 将 state 转换成纯 JS 结构树
+
 
 external_draft_js_["EditorState"].prototype.toRAW = function (noStringify) {
   return noStringify ? Object(external_braft_convert_["convertEditorStateToRaw"])(this) : JSON.stringify(Object(external_braft_convert_["convertEditorStateToRaw"])(this));

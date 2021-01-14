@@ -12,6 +12,7 @@ EditorState.prototype.toHTML = function (options = {}) {
   return convertEditorStateToHTML(this, {...convertOptions, ...options})
 }
 
+// 将 state 转换成纯 JS 结构树
 EditorState.prototype.toRAW = function (noStringify) {
   return noStringify ? convertEditorStateToRaw(this) : JSON.stringify(convertEditorStateToRaw(this))
 }

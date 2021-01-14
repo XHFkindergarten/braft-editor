@@ -45,7 +45,6 @@ class Demo extends React.Component {
   }
 
   handleChange = (editorState) => {
-    console.log('change')
     this.setState({ editorState })
   }
 

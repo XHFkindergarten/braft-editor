@@ -13,6 +13,7 @@ import { getBlockRendererFn, getBlockRenderMap, getBlockStyleFn, getCustomStyleM
 import { compositeStyleImportFn, compositeStyleExportFn, compositeEntityImportFn, compositeEntityExportFn, compositeBlockImportFn, compositeBlockExportFn, getPropInterceptors } from 'helpers/extension'
 import ControlBar from 'components/business/ControlBar'
 
+// 拉取 合法的
 const buildHooks= (hooks) => (hookName, defaultReturns = {}) => {
   return hooks[hookName] || (() => defaultReturns)
 }
@@ -23,6 +24,7 @@ const filterColors = (colors, colors2) => {
   }).filter((item, index, array) => array.indexOf(item) === index)
 }
 
+// 检查某项控件是否可用
 const isControlEnabled = (props, controlName) => {
   return [...props.controls, ...props.extendControls].find(item => item === controlName || item.key === controlName) && props.excludeControls.indexOf(controlName) === -1
 }
@@ -50,25 +52,33 @@ export default class BraftEditor extends React.Component {
   constructor (props) {
 
     super(props)
-
+    // 读取编辑器的参数项，拦截器筛选后的
     this.editorProps = this.getEditorProps(props)
+    // @question 装饰器
     this.editorDecorators = getDecorators(this.editorProps.editorId || this.editorProps.id)
-
+    console.log('editorDecorators', this.editorDecorators)
     this.isFocused = false
     this.isLiving = false
     this.braftFinder = null
     this.valueInitialized = !!(this.props.defaultValue || this.props.value)
 
+    // draftjs 创建 state 对象
     const defaultEditorState = (this.props.defaultValue || this.props.value) instanceof EditorState
       ? (this.props.defaultValue || this.props.value)
       : EditorState.createEmpty(this.editorDecorators)
+    
+
+    // 挂载【转换配置】
+    // 根据外部的传入生成转换规则
     defaultEditorState.setConvertOptions(getConvertOptions(this.editorProps))
 
     let tempColors = []
 
     if (ContentUtils.isEditorState(defaultEditorState)) {
-
+      // 提取文档内容中使用的样式颜色
       const colors = ColorUtils.detectColorsFromDraftState(defaultEditorState.toRAW(true))
+
+      // 将属性挂载到 State 实例上
       defaultEditorState.setConvertOptions(getConvertOptions(this.editorProps))
 
       tempColors = filterColors(colors, this.editorProps.colors)
@@ -83,17 +93,22 @@ export default class BraftEditor extends React.Component {
     this.containerNode = null
   }
 
+  // 数据初始化处理
+  // 1. 取出特殊参数 例如 value, onChange, defaultValue
+  // 2. 根据 editorId 筛选器进行属性的筛选
   getEditorProps (props) {
 
     props = props || this.props
 
     const {value, defaultValue, onChange, ...restProps} = props// eslint-disable-line no-unused-vars
+    
     const propInterceptors = getPropInterceptors(restProps.editorId || restProps.id)
 
     if (propInterceptors.length === 0) {
       return restProps
     }
 
+    // 不可变数据化
     let porpsMap = Map(restProps)
 
     propInterceptors.forEach(interceptor => {
@@ -146,6 +161,7 @@ export default class BraftEditor extends React.Component {
     const { media, language } = this.editorProps
     const currentProps = this.getEditorProps()
 
+    // 判断媒体组件是否可用
     if (!isControlEnabled(currentProps, 'media') && isControlEnabled(this.editorProps, 'media') && !this.braftFinder) {
 
       const { uploadFn, validateFn, items } = { ...defaultProps.media, ...media }
@@ -202,6 +218,11 @@ export default class BraftEditor extends React.Component {
     this.controlBarInstance && this.controlBarInstance.closeBraftFinder()
   }
 
+  /**
+   * 
+   * @param {*} editorState 新的 state
+   * @param {*} callback 回调函数
+   */
   onChange = (editorState, callback) => {
 
     if (!(editorState instanceof EditorState)) {
@@ -237,6 +258,7 @@ export default class BraftEditor extends React.Component {
     return this.onChange(editorState, callback)
   }
 
+  // 通过 setState 强制重新渲染
   forceRender = () => {
 
     const selectionState = this.state.editorState.getSelection()
@@ -249,14 +271,14 @@ export default class BraftEditor extends React.Component {
 
   }
 
+  // 处理键盘事件
   onTab = (event) => {
-
+    // 如果在处理函数中已经被处理了，就取消默认事件
     if (keyCommandHandlers('tab', this.state.editorState, this) === 'handled') {
       event.preventDefault()
     }
-
+    // 触发钩子
     this.editorProps.onTab && this.editorProps.onTab(event)
-
   }
 
   onFocus = () => {
@@ -269,6 +291,7 @@ export default class BraftEditor extends React.Component {
     this.editorProps.onBlur && this.editorProps.onBlur(this.state.editorState)
   }
 
+  // 强制 focus
   requestFocus = () => {
     setTimeout(() => this.draftInstance.focus(), 0)
   }
@@ -299,30 +322,33 @@ export default class BraftEditor extends React.Component {
     this.setValue(ContentUtils.redo(this.state.editorState))
   }
 
+  // 移除选中区域的样式？
   removeSelectionInlineStyles = () => {
     this.setValue(ContentUtils.removeSelectionInlineStyles(this.state.editorState))
   }
 
+  // 插入分割线?
   insertHorizontalLine = () => {
     this.setValue(ContentUtils.insertHorizontalLine(this.state.editorState))
   }
 
+  // 清空编辑器内容，并且重置选中区域为空
   clearEditorContent = () => {
     this.setValue(ContentUtils.clear(this.state.editorState), (editorState) => {
       this.setValue(ContentUtils.toggleSelectionIndent(editorState, 0))
     })
   }
 
+  // 切换全屏
   toggleFullscreen = (fullscreen) => {
-
     this.setState({
       isFullscreen: typeof fullscreen !== 'undefined' ? fullscreen : !this.state.isFullscreen
     }, () => {
       this.editorProps.onFullscreen && this.editorProps.onFullscreen(this.state.isFullscreen)
     })
-
   }
 
+  // 是否锁定编辑器
   lockOrUnlockEditor (editorLocked) {
     this.setState({ editorLocked })
   }
@@ -340,29 +366,41 @@ export default class BraftEditor extends React.Component {
     } = this.editorProps
 
     const { isFullscreen, editorState } = this.state
-
+    // 编辑器 id
     editorId = editorId || id
+    // 外部 生命周期钩子
     hooks = buildHooks(hooks)
+    // 筛选所有的控件名称
     controls = controls.filter(item => excludeControls.indexOf(item) === -1)
+    // 语言设置
     language = (typeof language === 'function' ? language(languages, 'braft-editor') : languages[language]) || languages[defaultProps.language]
 
+    // 
+    /**
+     * 支持的媒体
+     * audio: true
+     * embed: true
+     * image: true
+     * video: true
+     */
     const externalMedias = media && media.externals ? {
       ...defaultProps.media.externals,
       ...media.externals
     } : defaultProps.media.externals
-
     const accepts = media && media.accepts ? {
       ...defaultProps.media.accepts,
       ...media.accepts
     } : defaultProps.media.accepts
-
+    // 允许上传的媒体类型
     media = { ...defaultProps.media, ...media, externalMedias, accepts }
 
+    // 如果没有上传函数, 那么类型为 false
     if (!media.uploadFn) {
       media.video = false
       media.audio = false
     }
 
+    // 工具栏参数
     const controlBarProps = {
       editor: this,
       editorState: editorState,
@@ -378,14 +416,18 @@ export default class BraftEditor extends React.Component {
 
     const { unitExportFn } = editorState.convertOptions
 
+    // 公共参数
     const commonProps = {
-      editor: this, editorId, hooks,
+      editor: this,
+      editorId,
+      hooks,
       editorState: editorState,
       containerNode: this.containerNode,
       imageControls, imageResizable, language, extendAtomics, imageEqualRatio
     }
 
     const blockRendererFn = getBlockRendererFn(commonProps, this.editorProps.blockRendererFn)
+    // 渲染各类 block 的 renderer
     const blockRenderMap = getBlockRenderMap(commonProps, this.editorProps.blockRenderMap)
     const blockStyleFn = getBlockStyleFn(this.editorProps.blockStyleFn)
     const customStyleMap = getCustomStyleMap(commonProps, this.editorProps.customStyleMap)
@@ -399,6 +441,7 @@ export default class BraftEditor extends React.Component {
       mixedProps.readOnly = true
     }
 
+    // 如果内容为空，但是存在样式，则不显示 placeholder
     if (
       placeholder && fixPlaceholder && editorState.isEmpty() &&
       editorState.getCurrentContent().getFirstBlock().getType() !== 'unstyled'
@@ -406,6 +449,7 @@ export default class BraftEditor extends React.Component {
       placeholder = ''
     }
 
+    // 生成 draft-js 格式的参数
     const draftProps = {
       ref: instance => { this.draftInstance = instance },
       editorState: editorState,
@@ -420,9 +464,14 @@ export default class BraftEditor extends React.Component {
       onTab: this.onTab,
       onFocus: this.onFocus,
       onBlur: this.onBlur,
-      blockRenderMap, blockRendererFn, blockStyleFn,
-      customStyleMap, customStyleFn,
-      keyBindingFn, placeholder, stripPastedStyles,
+      blockRenderMap,
+      blockRendererFn,
+      blockStyleFn,
+      customStyleMap,
+      customStyleFn,
+      keyBindingFn,
+      placeholder,
+      stripPastedStyles,
       ...this.editorProps.draftProps,
       ...mixedProps
     }
