@@ -1,7 +1,7 @@
 import './style.scss'
 import React from 'react'
 import { ContentUtils } from 'braft-utils'
-import Switch from 'components/common/Switch'
+// import Switch from 'components/common/Switch'
 import { imageControlItems } from 'configs/controls'
 
 export default class Image extends React.Component {
@@ -82,7 +82,7 @@ export default class Image extends React.Component {
 
     let float = blockData.get('float')
     let alignment = blockData.get('alignment')
-    let { url, link, link_target, width, height, meta } = mediaData
+    let { url, link, width, height, meta } = mediaData
     let imageStyles = {}
     let clearFix = false
 
@@ -145,13 +145,14 @@ export default class Image extends React.Component {
                     <input type='text' placeholder={language.linkEditor.inputWithEnterPlaceHolder} onKeyDown={this.handleLinkInputKeyDown} onChange={this.setImageLink} defaultValue={link}/>
                     <button type='button' onClick={this.confirmImageLink}>{language.base.confirm}</button>
                   </div>
-                  <div className='switch-group'>
+                  {/* 选择是否跳转新标签页 */}
+                  {/* <div className='switch-group'>
                     <Switch
                       active={link_target === '_blank'}
                       onClick={() => this.setImageLinkTarget(link_target)}
                     />
                     <label>{language.linkEditor.openInNewWindow}</label>
-                  </div>
+                  </div> */}
                 </div>
               ) : null}
               {sizeEditorVisible ? (
@@ -268,14 +269,13 @@ export default class Image extends React.Component {
   }
 
   executeCommand = (command) => {
-
+    console.log('command', command)
     if (typeof command === 'string') {
       const [method, param] = command.split('|')
       this[method] && this[method](param)
     } else if (typeof command === 'function') {
       command(this.props.block, this.props.mediaData, this.props.editor.getValue())
     }
-
   }
 
   removeImage = () => {
@@ -329,7 +329,7 @@ export default class Image extends React.Component {
   }
 
   confirmImageLink = () => {
-
+    this.toggleLinkEditor()
     let { tempLink: link } = this.state
     const hookReturns = this.props.hooks('set-image-link', link)(link)
 
@@ -342,7 +342,8 @@ export default class Image extends React.Component {
     }
 
     if (link !== null) {
-      this.props.editor.setValue(ContentUtils.setMediaData(this.props.editor.getValue(), this.props.entityKey, { link }))
+      // 永远默认从新标签页打开
+      this.props.editor.setValue(ContentUtils.setMediaData(this.props.editor.getValue(), this.props.entityKey, { link, link_target: '_blank' }))
       window.setImmediate(this.props.editor.forceRender)
     }
   }

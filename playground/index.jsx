@@ -89,7 +89,16 @@ class Demo extends React.Component {
   state = {
     count: 0,
     readOnly: false,
-    editorState: BraftEditor.createEditorState('<p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>')
+    editorState: BraftEditor.createEditorState(`
+    <p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>
+    <p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>
+    <p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>
+    <p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>
+    <p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>
+    <p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>
+    <p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>
+    <p class="my-classname"><img src="https://www.baidu.com/img/bd_logo1.png?where=super" /><span style="color:#e25041;">红色文字</span>默认文字</p>
+    `)
   }
 
   handleChange = (editorState) => {
@@ -137,21 +146,21 @@ class Demo extends React.Component {
     'toggle-link': ({ href, target }) => {
       href = href.indexOf('http') === 0 ? href : `http://${href}`
       return { href, target: '_blank' }
-    },
-    'set-image-link': link => {
-      try {
-        // 目前发现点击确认面板不会自动收起
-        // dom query 查找 link 按钮的位置并人工点击来使面板收起
-        const linkIndex = this.imageControls.indexOf('link')
-        document
-          .querySelector('div.bf-media-toolbar')
-          .querySelectorAll('a')
-          [linkIndex].click()
-      } catch (e) {
-        console.error('人工点击 link panel 失败', e)
-      }
-      return link
     }
+    // 'set-image-link': link => {
+    //   try {
+    //     // 目前发现点击确认面板不会自动收起
+    //     // dom query 查找 link 按钮的位置并人工点击来使面板收起
+    //     const linkIndex = this.imageControls.indexOf('link')
+    //     document
+    //       .querySelector('div.bf-media-toolbar')
+    //       .querySelectorAll('a')
+    //       [linkIndex].click()
+    //   } catch (e) {
+    //     console.error('人工点击 link panel 失败', e)
+    //   }
+    //   return link
+    // }
   }
 
   fontSizes = [12, 14, 16, 18, 20, 24, 28, 30, 32, 36, 40]
