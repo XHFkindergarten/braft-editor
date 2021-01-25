@@ -272,7 +272,6 @@ export default class Image extends React.Component {
   }
 
   executeCommand = (command) => {
-    console.log('command', command)
     if (typeof command === 'string') {
       const [method, param] = command.split('|')
       this[method] && this[method](param)

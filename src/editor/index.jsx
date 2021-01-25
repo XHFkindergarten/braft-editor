@@ -56,7 +56,6 @@ export default class BraftEditor extends React.Component {
     this.editorProps = this.getEditorProps(props)
     // @question 装饰器
     this.editorDecorators = getDecorators(this.editorProps.editorId || this.editorProps.id)
-    console.log('editorDecorators', this.editorDecorators)
     this.isFocused = false
     this.isLiving = false
     this.braftFinder = null
@@ -224,7 +223,6 @@ export default class BraftEditor extends React.Component {
    * @param {*} callback 回调函数
    */
   onChange = (editorState, callback) => {
-    console.log('editorState', editorState)
     if (!(editorState instanceof EditorState)) {
       editorState = EditorState.set(editorState, {
         decorator: this.editorDecorators
