@@ -3817,7 +3817,12 @@ function (_React$Component) {
         type: "button",
         onClick: this.confirmImageSize
       }, language.base.confirm)), external_react_default.a.createElement("div", {
-        className: "bf-image-size-editor-tip"
+        style: {
+          color: '#909194',
+          fontSize: '12px',
+          textAlign: 'left',
+          padding: '0 10px 8px 10px'
+        }
       }, "\u5BBD\u9AD8\u53EA\u8F93\u5165\u4E00\u9879\u65F6\uFF0C\u56FE\u7247\u5C06\u6309\u7167\u539F\u6BD4\u4F8B\u7F29\u653E\u3002")) : null, renderedControlItems, external_react_default.a.createElement("i", {
         style: {
           marginLeft: toolbarOffset * -1
