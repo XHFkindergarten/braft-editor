@@ -2,7 +2,7 @@ import 'draft-js/dist/Draft.css'
 import 'assets/scss/_base.scss'
 import React from 'react'
 import languages from 'languages'
-import BraftFinder from 'braft-finder'
+import BraftFinder from 'o2-finder'
 import { ColorUtils, ContentUtils } from 'braft-utils'
 import { Editor, EditorState } from 'draft-js'
 import { Map } from 'immutable'
@@ -224,7 +224,7 @@ export default class BraftEditor extends React.Component {
    * @param {*} callback 回调函数
    */
   onChange = (editorState, callback) => {
-
+    console.log('editorState', editorState)
     if (!(editorState instanceof EditorState)) {
       editorState = EditorState.set(editorState, {
         decorator: this.editorDecorators

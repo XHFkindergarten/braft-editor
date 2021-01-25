@@ -1,0 +1,13 @@
+.display-block {
+  padding: 30px;
+}
+
+table {
+  width: 100%;
+}
+tr {
+  height: 50px;
+}td {
+  padding: 10 15;
+  border: 1px solid #c5c5c5;
+}

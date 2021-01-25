@@ -1,10 +1,10 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("react"), require("braft-utils"), require("draft-js"), require("immutable"), require("braft-convert"), require("react-dom"), require("braft-finder"), require("draftjs-utils"));
+		module.exports = factory(require("react"), require("braft-utils"), require("draft-js"), require("immutable"), require("braft-convert"), require("react-dom"), require("o2-finder"), require("draftjs-utils"));
 	else if(typeof define === 'function' && define.amd)
-		define(["react", "braft-utils", "draft-js", "immutable", "braft-convert", "react-dom", "braft-finder", "draftjs-utils"], factory);
+		define(["react", "braft-utils", "draft-js", "immutable", "braft-convert", "react-dom", "o2-finder", "draftjs-utils"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory(require("react"), require("braft-utils"), require("draft-js"), require("immutable"), require("braft-convert"), require("react-dom"), require("braft-finder"), require("draftjs-utils")) : factory(root["react"], root["braft-utils"], root["draft-js"], root["immutable"], root["braft-convert"], root["react-dom"], root["braft-finder"], root["draftjs-utils"]);
+		var a = typeof exports === 'object' ? factory(require("react"), require("braft-utils"), require("draft-js"), require("immutable"), require("braft-convert"), require("react-dom"), require("o2-finder"), require("draftjs-utils")) : factory(root["react"], root["braft-utils"], root["draft-js"], root["immutable"], root["braft-convert"], root["react-dom"], root["o2-finder"], root["draftjs-utils"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
 })(window, function(__WEBPACK_EXTERNAL_MODULE__0__, __WEBPACK_EXTERNAL_MODULE__3__, __WEBPACK_EXTERNAL_MODULE__6__, __WEBPACK_EXTERNAL_MODULE__13__, __WEBPACK_EXTERNAL_MODULE__14__, __WEBPACK_EXTERNAL_MODULE__16__, __WEBPACK_EXTERNAL_MODULE__17__, __WEBPACK_EXTERNAL_MODULE__23__) {
@@ -2285,9 +2285,9 @@ var external_react_default = /*#__PURE__*/__webpack_require__.n(external_react_)
   'pt-br': pt_br,
   'vi-vn': vi_vn
 });
-// EXTERNAL MODULE: external "braft-finder"
-var external_braft_finder_ = __webpack_require__(17);
-var external_braft_finder_default = /*#__PURE__*/__webpack_require__.n(external_braft_finder_);
+// EXTERNAL MODULE: external "o2-finder"
+var external_o2_finder_ = __webpack_require__(17);
+var external_o2_finder_default = /*#__PURE__*/__webpack_require__.n(external_o2_finder_);
 
 // EXTERNAL MODULE: external "braft-utils"
 var external_braft_utils_ = __webpack_require__(3);
@@ -3061,23 +3061,6 @@ var slicedToArray_default = /*#__PURE__*/__webpack_require__.n(slicedToArray);
 // EXTERNAL MODULE: ./renderers/atomics/Image/style.scss
 var Image_style = __webpack_require__(45);
 
-// EXTERNAL MODULE: ./components/common/Switch/style.scss
-var Switch_style = __webpack_require__(46);
-
-// CONCATENATED MODULE: ./components/common/Switch/index.jsx
-
-
-/* harmony default export */ var Switch = (function (props) {
-  var active = props.active,
-      _onClick = props.onClick,
-      className = props.className;
-  return external_react_default.a.createElement("div", {
-    onClick: function onClick() {
-      return _onClick();
-    },
-    className: 'bf-switch ' + className + (active ? ' active' : '')
-  });
-});
 // CONCATENATED MODULE: ./configs/controls.js
 
 /* harmony default export */ var configs_controls = (function (lang, editor) {
@@ -3330,7 +3313,7 @@ var imageControlItems = {
 
 
 
-
+ // import Switch from 'components/common/Switch'
 
 
 
@@ -3466,6 +3449,8 @@ function (_React$Component) {
     });
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "executeCommand", function (command) {
+      console.log('command', command);
+
       if (typeof command === 'string') {
         var _command$split = command.split('|'),
             _command$split2 = slicedToArray_default()(_command$split, 2),
@@ -3515,6 +3500,8 @@ function (_React$Component) {
     });
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "confirmImageLink", function () {
+      _this.toggleLinkEditor();
+
       var link = _this.state.tempLink;
 
       var hookReturns = _this.props.hooks('set-image-link', link)(link);
@@ -3528,8 +3515,10 @@ function (_React$Component) {
       }
 
       if (link !== null) {
+        // 永远默认从新标签页打开
         _this.props.editor.setValue(external_braft_utils_["ContentUtils"].setMediaData(_this.props.editor.getValue(), _this.props.entityKey, {
-          link: link
+          link: link,
+          link_target: '_blank'
         }));
 
         window.setImmediate(_this.props.editor.forceRender);
@@ -3569,6 +3558,9 @@ function (_React$Component) {
     });
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "confirmImageSize", function () {
+      // 关闭面板
+      _this.toggleSizeEditor();
+
       var _this$state = _this.state,
           width = _this$state.tempWidth,
           height = _this$state.tempHeight;
@@ -3697,7 +3689,8 @@ function (_React$Component) {
       _this.setState({
         toolbarVisible: false
       }, function () {
-        _this.unlockEditor();
+        _this.unlockEditor(); // 在鼠标移出图片区域后，恢复光标 focus 态
+
 
         _this.props.editor.requestFocus();
       });
@@ -3728,7 +3721,6 @@ function (_React$Component) {
       var alignment = blockData.get('alignment');
       var url = mediaData.url,
           link = mediaData.link,
-          link_target = mediaData.link_target,
           width = mediaData.width,
           height = mediaData.height,
           meta = mediaData.meta;
@@ -3807,14 +3799,7 @@ function (_React$Component) {
       }), external_react_default.a.createElement("button", {
         type: "button",
         onClick: this.confirmImageLink
-      }, language.base.confirm)), external_react_default.a.createElement("div", {
-        className: "switch-group"
-      }, external_react_default.a.createElement(Switch, {
-        active: link_target === '_blank',
-        onClick: function onClick() {
-          return _this2.setImageLinkTarget(link_target);
-        }
-      }), external_react_default.a.createElement("label", null, language.linkEditor.openInNewWindow))) : null, sizeEditorVisible ? external_react_default.a.createElement("div", {
+      }, language.base.confirm))) : null, sizeEditorVisible ? external_react_default.a.createElement("div", {
         className: "bf-image-size-editor"
       }, external_react_default.a.createElement("div", {
         className: "editor-input-group"
@@ -3936,10 +3921,10 @@ function (_React$Component) {
 
 
 // EXTERNAL MODULE: ./renderers/atomics/Video/style.scss
-var Video_style = __webpack_require__(47);
+var Video_style = __webpack_require__(46);
 
 // EXTERNAL MODULE: ./components/common/Modal/style.scss
-var Modal_style = __webpack_require__(48);
+var Modal_style = __webpack_require__(47);
 
 // EXTERNAL MODULE: external "react-dom"
 var external_react_dom_ = __webpack_require__(16);
@@ -4181,7 +4166,7 @@ var Modal_showModal = function showModal(props) {
   return modalInstance;
 };
 // EXTERNAL MODULE: ./components/business/PlayerModal/style.scss
-var PlayerModal_style = __webpack_require__(49);
+var PlayerModal_style = __webpack_require__(48);
 
 // CONCATENATED MODULE: ./components/business/PlayerModal/index.jsx
 
@@ -4315,7 +4300,7 @@ function (_React$Component) {
 
 
 // EXTERNAL MODULE: ./renderers/atomics/Audio/style.scss
-var Audio_style = __webpack_require__(50);
+var Audio_style = __webpack_require__(49);
 
 // CONCATENATED MODULE: ./renderers/atomics/Audio/index.jsx
 
@@ -4388,7 +4373,7 @@ function (_React$Component) {
 
 
 // EXTERNAL MODULE: ./renderers/atomics/Embed/style.scss
-var Embed_style = __webpack_require__(51);
+var Embed_style = __webpack_require__(50);
 
 // CONCATENATED MODULE: ./renderers/atomics/Embed/index.jsx
 
@@ -4461,7 +4446,7 @@ function (_React$Component) {
 
 
 // EXTERNAL MODULE: ./renderers/atomics/HorizontalLine/style.scss
-var HorizontalLine_style = __webpack_require__(52);
+var HorizontalLine_style = __webpack_require__(51);
 
 // CONCATENATED MODULE: ./renderers/atomics/HorizontalLine/index.jsx
 
@@ -4592,8 +4577,6 @@ var blockRendererFn_BlockRenderFnContext = function BlockRenderFnContext() {
     var customBlockRendererFn = _this.customBlockRendererFn,
         superProps = _this.superProps;
     var blockType = block.getType();
-    console.log('block', block);
-    console.log('blockType', blockType);
     var blockRenderer = null;
 
     if (customBlockRendererFn) {
@@ -4830,11 +4813,28 @@ var getCustomStyleMap = inlineStyleMap;
 var getCustomStyleFn = inlineStyleFn;
 var getDecorators = decorators;
 // EXTERNAL MODULE: ./components/business/ControlBar/style.scss
-var ControlBar_style = __webpack_require__(53);
+var ControlBar_style = __webpack_require__(52);
 
 // EXTERNAL MODULE: ./components/business/LinkEditor/style.scss
-var LinkEditor_style = __webpack_require__(54);
+var LinkEditor_style = __webpack_require__(53);
 
+// EXTERNAL MODULE: ./components/common/Switch/style.scss
+var Switch_style = __webpack_require__(54);
+
+// CONCATENATED MODULE: ./components/common/Switch/index.jsx
+
+
+/* harmony default export */ var Switch = (function (props) {
+  var active = props.active,
+      _onClick = props.onClick,
+      className = props.className;
+  return external_react_default.a.createElement("div", {
+    onClick: function onClick() {
+      return _onClick();
+    },
+    className: 'bf-switch ' + className + (active ? ' active' : '')
+  });
+});
 // EXTERNAL MODULE: ./components/common/DropDown/style.scss
 var DropDown_style = __webpack_require__(55);
 
@@ -6162,7 +6162,13 @@ function (_React$Component) {
     });
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "insertMedias", function (medias) {
-      _this.props.editor.setValue(external_braft_utils_["ContentUtils"].insertMedias(_this.props.editorState, medias));
+      console.log('start', _this.props.editorState);
+
+      try {
+        _this.props.editor.setValue(external_braft_utils_["ContentUtils"].insertMedias(_this.props.editorState, medias));
+      } catch (e) {
+        console.log('插入图片失败', e);
+      }
 
       _this.props.editor.requestFocus(); // 钩子函数
 
@@ -6309,6 +6315,7 @@ function (_React$Component) {
         style: style,
         onMouseDown: this.preventDefault
       }, allControls.map(function (item, index) {
+        console.log('item', item);
         var itemKey = typeof item === 'string' ? item : item.key;
 
         if (typeof itemKey !== 'string') {
@@ -6601,7 +6608,7 @@ function (_React$Component) {
     _this = possibleConstructorReturn_default()(this, getPrototypeOf_default()(BraftEditor).call(this, props)); // 读取编辑器的参数项，拦截器筛选后的
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "onChange", function (editorState, callback) {
-      console.log('change');
+      console.log('editorState', editorState);
 
       if (!(editorState instanceof external_draft_js_["EditorState"])) {
         editorState = external_draft_js_["EditorState"].set(editorState, {
@@ -6819,7 +6826,7 @@ function (_React$Component) {
             validateFn = _defaultProps$media$m.validateFn,
             items = _defaultProps$media$m.items;
 
-        this.braftFinder = new external_braft_finder_default.a({
+        this.braftFinder = new external_o2_finder_default.a({
           items: items,
           language: language,
           uploader: uploadFn,
@@ -6858,7 +6865,7 @@ function (_React$Component) {
             validateFn = _defaultProps$media$m2.validateFn,
             items = _defaultProps$media$m2.items;
 
-        this.braftFinder = new external_braft_finder_default.a({
+        this.braftFinder = new external_o2_finder_default.a({
           items: items,
           language: language,
           uploader: uploadFn,

@@ -384,6 +384,9 @@ export default class Image extends React.Component {
 
   confirmImageSize = () => {
 
+    // 关闭面板
+    this.toggleSizeEditor()
+
     const { tempWidth: width, tempHeight: height } = this.state
     let newImageSize = {}
 

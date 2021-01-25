@@ -23,7 +23,7 @@ module.exports = merge(baseConfigs, {
     'draft-js': 'draft-js',
     'draft-convert': 'draft-convert',
     'draftjs-utils': 'draftjs-utils',
-    'braft-finder': 'braft-finder',
+    'o2-finder': 'o2-finder',
     'braft-utils': 'braft-utils',
     'braft-convert': 'braft-convert',
     'immutable': 'immutable'
