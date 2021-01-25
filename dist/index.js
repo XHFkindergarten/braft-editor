@@ -3449,8 +3449,6 @@ function (_React$Component) {
     });
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "executeCommand", function (command) {
-      console.log('command', command);
-
       if (typeof command === 'string') {
         var _command$split = command.split('|'),
             _command$split2 = slicedToArray_default()(_command$split, 2),
@@ -3818,7 +3816,9 @@ function (_React$Component) {
       }), external_react_default.a.createElement("button", {
         type: "button",
         onClick: this.confirmImageSize
-      }, language.base.confirm))) : null, renderedControlItems, external_react_default.a.createElement("i", {
+      }, language.base.confirm)), external_react_default.a.createElement("div", {
+        className: "bf-image-size-editor-tip"
+      }, "\u5BBD\u9AD8\u53EA\u8F93\u5165\u4E00\u9879\u65F6\uFF0C\u56FE\u7247\u5C06\u6309\u7167\u539F\u6BD4\u4F8B\u7F29\u653E\u3002")) : null, renderedControlItems, external_react_default.a.createElement("i", {
         style: {
           marginLeft: toolbarOffset * -1
         },
@@ -6162,13 +6162,7 @@ function (_React$Component) {
     });
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "insertMedias", function (medias) {
-      console.log('start', _this.props.editorState);
-
-      try {
-        _this.props.editor.setValue(external_braft_utils_["ContentUtils"].insertMedias(_this.props.editorState, medias));
-      } catch (e) {
-        console.log('插入图片失败', e);
-      }
+      _this.props.editor.setValue(external_braft_utils_["ContentUtils"].insertMedias(_this.props.editorState, medias));
 
       _this.props.editor.requestFocus(); // 钩子函数
 
@@ -6315,7 +6309,6 @@ function (_React$Component) {
         style: style,
         onMouseDown: this.preventDefault
       }, allControls.map(function (item, index) {
-        console.log('item', item);
         var itemKey = typeof item === 'string' ? item : item.key;
 
         if (typeof itemKey !== 'string') {
@@ -6608,8 +6601,6 @@ function (_React$Component) {
     _this = possibleConstructorReturn_default()(this, getPrototypeOf_default()(BraftEditor).call(this, props)); // 读取编辑器的参数项，拦截器筛选后的
 
     defineProperty_default()(assertThisInitialized_default()(assertThisInitialized_default()(_this)), "onChange", function (editorState, callback) {
-      console.log('editorState', editorState);
-
       if (!(editorState instanceof external_draft_js_["EditorState"])) {
         editorState = external_draft_js_["EditorState"].set(editorState, {
           decorator: _this.editorDecorators
@@ -6753,7 +6744,6 @@ function (_React$Component) {
     _this.editorProps = _this.getEditorProps(props); // @question 装饰器
 
     _this.editorDecorators = getDecorators(_this.editorProps.editorId || _this.editorProps.id);
-    console.log('editorDecorators', _this.editorDecorators);
     _this.isFocused = false;
     _this.isLiving = false;
     _this.braftFinder = null;
