@@ -162,6 +162,9 @@ export default class Image extends React.Component {
                     <input type='text' placeholder={language.base.height} onKeyDown={this.handleSizeInputKeyDown} onChange={this.setImageHeight} defaultValue={height}/>
                     <button type='button' onClick={this.confirmImageSize}>{language.base.confirm}</button>
                   </div>
+                  <div className='bf-image-size-editor-tip'>
+                    宽高只输入一项时，图片将按照原比例缩放。
+                  </div>
                 </div>
               ) : null}
               {renderedControlItems}

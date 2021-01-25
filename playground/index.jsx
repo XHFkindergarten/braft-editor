@@ -219,11 +219,11 @@ class Demo extends React.Component {
             // imageResizable={true}
             // imageEqualRatio={true}
             imageControls={this.imageControls}
-            media={{
-              uploadFn: (options) => {
-                options.success('http://img13.360buyimg.com/ling/jfs/t1/154160/37/14457/122240/60015e80E47feca60/145ab0ad93ee054e.jpg')
-              }
-            }}
+            // media={{
+            //   uploadFn: (options) => {
+            //     options.success('http://img13.360buyimg.com/ling/jfs/t1/154160/37/14457/122240/60015e80E47feca60/145ab0ad93ee054e.jpg')
+            //   }
+            // }}
           />
         </div>
         <div className='display-block' dangerouslySetInnerHTML={{ __html: displayHtml }} />

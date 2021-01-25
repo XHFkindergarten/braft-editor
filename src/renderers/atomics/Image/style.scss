@@ -52,6 +52,12 @@
   input{
     width: 80px;      
   }
+  &-tip {
+    color: #909194;
+    font-size: 12px;
+    text-align: left;
+    padding: 0 10px 8px 10px;
+  }
 }
 .bf-image-link-editor{
   input{
